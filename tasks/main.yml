@@ -1,0 +1,51 @@
+---
+# tasks file for ansible-role-landir.sudoers
+- name: Check group is present
+  group:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - root
+      - adm
+      - cdrom
+      - sudo
+      - dip
+      - www-data
+      - plugdev
+      - admin
+      - lpadmin
+      - sambashare
+      - vboxusers
+      - docker
+  ignore_errors: yes
+
+- name: Add user to groups
+  user:
+    name: "{{ usuario }}"
+    groups: "{{ item }}"
+    append: yes
+    state: present
+  with_items:
+      - root
+      - adm
+      - cdrom
+      - sudo
+      - dip
+      - www-data
+      - plugdev
+      - admin
+      - lpadmin
+      - sambashare
+      - vboxusers
+      - docker
+  ignore_errors: yes
+
+- name: Add configured user accounts to passwordless sudoers.
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^{{ item }}'
+    line: '{{ item }} ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    validate: 'visudo -cf %s'
+  with_items: "{{ security_sudoers_passwordless }}"
+  when: security_sudoers_passwordless | length > 0

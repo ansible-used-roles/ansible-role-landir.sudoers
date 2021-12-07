@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - ansible-role-landir.sudoers
+  vars:
+    - usuario: "landir"
+    - security_sudoers_passwordless:
+      - "landir"
+      - "%admin"
